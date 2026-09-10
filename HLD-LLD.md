@@ -41,7 +41,48 @@ tables over long paragraphs. No marketing language.
    config, or infra files as part of this task.
 5. **Diagrams use Mermaid.** Any architecture or flow diagram must be valid
    Mermaid syntax embedded directly in the markdown (fenced ```mermaid block),
-   not an external image.
+   not an external image. Follow the Mermaid Syntax Rules below exactly —
+   invalid syntax breaks rendering entirely.
+
+## Mermaid Syntax Rules (avoid rendering errors)
+
+Mermaid node labels have reserved characters. Violating these produces a
+"Lexical error / Unrecognized text" failure when GitHub renders the diagram.
+
+1. **Never start a label with `/`.** `[/auth,/users,/tasks]` is invalid — a
+   leading `/` inside `[...]` is reserved for trapezoid-shaped nodes and the
+   parser will fail on the rest of the text. If you need to list routes or
+   paths, put them in quotes: `["/auth, /users, /tasks"]`.
+2. **Wrap any label containing a comma, slash, parenthesis, colon, or other
+   punctuation in double quotes.** Example:
+   - Bad: `A[API Layer /auth,/users,/tasks]`
+   - Good: `A["API Layer: /auth, /users, /tasks"]`
+3. **Keep one edge or node declaration per line.** Do not chain multiple
+   node definitions with commas on one line.
+4. **Prefer short labels; move detail to surrounding prose.** A node like
+   `A["API Layer"]` with the specific routes described in text immediately
+   below the diagram is safer than cramming a route list into the diagram
+   itself.
+5. **Escape or avoid special characters entirely where possible** — quotes
+   inside labels, angle brackets, and pipe characters are common failure
+   points. If a value naturally contains these (e.g. a generic type like
+   `List<User>`), rewrite it in prose form (`List of User`) inside the label.
+6. **Before finalizing, mentally re-parse the diagram line by line** and
+   confirm every node definition is either a bare word/short phrase, or a
+   double-quoted string — never a mix of bare text and punctuation.
+
+Example of a safe layered diagram opening:
+
+```mermaid
+flowchart TB
+    subgraph Client
+        UI["Web UI"]
+    end
+    subgraph API
+        Gateway["API Gateway: /auth, /users, /tasks"]
+    end
+    UI -->|HTTPS| Gateway
+```
 
 ## HLD Structure (`docs/HLD.md`)
 

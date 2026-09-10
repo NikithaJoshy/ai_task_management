@@ -41,6 +41,20 @@ from the individual per-repo docs.)
    source documents — only reorganize, merge, and de-duplicate them.
 4. **Update, don't rewrite**, on subsequent runs — if a consolidated doc
    already exists, only touch the sections whose source material changed.
+5. **When merging Mermaid diagrams, re-validate syntax — do not just splice
+   text together.** Follow the same Mermaid Syntax Rules used to generate the
+   originals:
+   - Never start a node label with `/` (e.g. `[/auth,/users,/tasks]` is
+     invalid — reserved for trapezoid shapes).
+   - Wrap any label containing a comma, slash, parenthesis, or colon in
+     double quotes, e.g. `Gateway["API Gateway: /auth, /users, /tasks"]`.
+   - One node or edge definition per line; never chain definitions with
+     commas.
+   - If the frontend and backend diagrams each define a node with the same
+     ID but different meaning, rename one before merging — colliding IDs
+     silently overwrite each other in Mermaid.
+   - After merging, mentally re-parse the combined diagram line by line to
+     confirm every label is either a bare short phrase or fully quoted.
 
 ## Merge Logic
 
